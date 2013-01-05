@@ -1,10 +1,13 @@
 --run Files
 local init = io.open(minetest.get_worldpath().."/adventures_init", "w")
 if(init == nil) then
-	init:write("init")
+	init:write("initialized")
 	init:close()
 	local file = io.open(minetest.get_worldpath().."/adventures_sources", "w")
-	file:write(" ")
+	file:write("initialized")
+	file:close()
+	local file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
+	file:write("initialized")
 	file:close()
 end
 

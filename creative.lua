@@ -1,5 +1,25 @@
 --Creative Mode
 
+minetest.register_on_joinplayer(function(obj)
+	local file = io.open(minetest.get_worldpath().."/adventures_previousmode", "r")
+	if(file:read("*l") == adventures.normal) then
+		file:close()
+		local creative = minetest.setting_get("creative_mode")
+		local node = nil
+		local pos = nil
+		for _,data in ipairs(adventures.sourceData) do
+			node = data[1]
+			pos = {x=data[2],y=data[3],z=data[4]}
+			minetest.env:add_node({name=node}, pos)
+		end
+		file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
+		file:write(adventures.creative)
+		file:close()
+	else
+		file:close()
+	end
+end)
+
 function adventures.snapPosition(meta, pos)
 	local newPos = {x=pos.x,y=pos.y,z=pos.z}
 	if(meta:get_int("width")%2 == 0) then
@@ -56,12 +76,26 @@ minetest.register_node("adventures:invincible_source" ,{
 	on_construct = function(pos)
 		adventures.sources[pos] = minetest.env:get_node(pos).name
 		local meta = minetest.env:get_meta(pos)
-		meta:set_int("x", 0)
-		meta:set_int("y", 0)
-		meta:set_int("z", 0)
-		meta:set_int("width", 2)
-		meta:set_int("length", 2)
-		meta:set_int("height", 1)
+		local x = 0
+		local y = 0
+		local z = 0
+		local width = 2
+		local length = 2
+		local height = 1
+		if(adventures.sourceData[pos] ~= nil) then
+			x = data[5]
+			y = data[6]
+			z = data[7]
+			width = data[8]
+			length = data[9]
+			height = data[10]
+		end
+		meta:set_int("x", x)
+		meta:set_int("y", y)
+		meta:set_int("z", z)
+		meta:set_int("width", width)
+		meta:set_int("length", length)
+		meta:set_int("height", height)
 		meta:set_string("formspec", updateInvincibleSourceFormspec(meta))
 		local area = minetest.env:add_entity(pos, "adventures:invincible_area")
 		area:setpos(adventures.snapPosition(meta, pos))
@@ -136,7 +170,7 @@ minetest.register_node("adventures:invincible_source" ,{
 	end,
 })
 
-minetest.register_chatcommand("saveAdventure", {
+minetest.register_chatcommand("save", {
 	description = "saveAdventure : Save all node data to files",
 	func = function(name, param)
 		dofile(minetest.get_modpath("adventures").."/encode.lua")
