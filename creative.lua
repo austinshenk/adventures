@@ -2,21 +2,21 @@
 
 minetest.register_on_joinplayer(function(obj)
 	local file = io.open(minetest.get_worldpath().."/adventures_previousmode", "r")
-	if(file:read("*l") == adventures.normal) then
+	if(file:read("*l") ~= adventures.creative) then
 		file:close()
-		local creative = minetest.setting_get("creative_mode")
-		local node = nil
-		local pos = nil
-		for _,data in ipairs(adventures.sourceData) do
-			node = data[1]
-			pos = {x=data[2],y=data[3],z=data[4]}
-			minetest.env:add_node({name=node}, pos)
+		for pos,data in pairs(adventures.sourceData) do
+			print("Added")
+			minetest.env:add_node({name=data[1]}, pos)
 		end
 		file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
 		file:write(adventures.creative)
 		file:close()
 	else
 		file:close()
+		for pos,data in pairs(adventures.sourceData) do
+			print("Stored")
+			adventures.sources[pos] = data[1]
+		end
 	end
 end)
 
@@ -166,6 +166,7 @@ minetest.register_node("adventures:invincible_source" ,{
 		meta:set_string("formspec", updateInvincibleSourceFormspec(meta))
 	end,
 	on_destruct = function(pos)
+		adventures.sources[pos] = nil
 		adventures.findArea(minetest.env:get_meta(pos), pos, {x=0,y=0,z=0}):remove()
 	end,
 })
@@ -173,7 +174,11 @@ minetest.register_node("adventures:invincible_source" ,{
 minetest.register_chatcommand("save", {
 	description = "saveAdventure : Save all node data to files",
 	func = function(name, param)
-		dofile(minetest.get_modpath("adventures").."/encode.lua")
-		print(name)
+		local saved = dofile(minetest.get_modpath("adventures").."/encode.lua")
+		if saved then
+			minetest.chat_send_player(name, "ADVENTURE SAVED")
+		else
+			minetest.chat_send_player(name, "ADVENTURE NOT SAVED")
+		end
 	end,
 })
