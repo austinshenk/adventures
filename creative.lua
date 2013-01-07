@@ -1,11 +1,11 @@
 --Creative Mode
 
 minetest.register_on_joinplayer(function(obj)
+	if adventures.started then return end
 	local file = io.open(minetest.get_worldpath().."/adventures_previousmode", "r")
 	if(file:read("*l") ~= adventures.creative) then
 		file:close()
 		for pos,data in pairs(adventures.sourceData) do
-			print("Added")
 			minetest.env:add_node({name=data[1]}, pos)
 		end
 		file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
@@ -14,38 +14,11 @@ minetest.register_on_joinplayer(function(obj)
 	else
 		file:close()
 		for pos,data in pairs(adventures.sourceData) do
-			print("Stored")
 			adventures.sources[pos] = data[1]
 		end
 	end
+	adventures.started = true
 end)
-
-function adventures.snapPosition(meta, pos)
-	local newPos = {x=pos.x,y=pos.y,z=pos.z}
-	if(meta:get_int("width")%2 == 0) then
-		newPos.x = newPos.x-0.5
-		newPos.z = newPos.z-0.5
-	end
-	if(meta:get_int("height")%2 == 0) then
-		newPos.y = newPos.y+0.5
-	end
-	newPos.x = newPos.x+meta:get_int("x")
-	newPos.y = newPos.y+meta:get_int("y")
-	newPos.z = newPos.z+meta:get_int("z")
-	return newPos
-end
-
-function adventures.findArea(meta, pos, delta)
-	local node = minetest.env:get_node(pos)
-	local areaPos = {x=pos.x+meta:get_int("x")-delta.x,y=pos.y+meta:get_int("y")-delta.y,z=pos.z+meta:get_int("z")-delta.z}
-	local objects = minetest.env:get_objects_inside_radius(areaPos, 1)
-	local name = node.name:sub(1,-7).."area"
-	for i,_ in ipairs(objects) do
-		if(objects[i]:get_entity_name() == name) then
-			return objects[i]
-		end
-	end
-end
 
 local function updateInvincibleSourceFormspec(meta)
 	local formspec = "size[6.25,3]"..
