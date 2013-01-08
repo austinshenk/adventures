@@ -47,6 +47,7 @@ function adventures.findArea(meta, pos, delta)
 end
 dofile(modpath.."/decode.lua")
 local creative = minetest.setting_get("creative_mode")
-if creative then dofile(modpath.."/creative.lua") 
+print("CREATIVE: "..creative)
+if creative == "1" then dofile(modpath.."/creative.lua") 
 else dofile(modpath.."/standard.lua")
 end
