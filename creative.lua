@@ -5,9 +5,11 @@ minetest.register_on_joinplayer(function(obj)
 	local file = io.open(minetest.get_worldpath().."/adventures_previousmode", "r")
 	if(file:read("*l") ~= adventures.creative) then
 		file:close()
-		for pos,data in pairs(adventures.sourceData) do
-			minetest.env:add_node({name=data[1]}, pos)
-		end
+		minetest.after(2.0, function()
+			for pos,data in pairs(adventures.sourceData) do
+				minetest.env:set_node(pos, {name=data[1]})
+			end
+		end)
 		file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
 		file:write(adventures.creative)
 		file:close()
