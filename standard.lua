@@ -1,4 +1,5 @@
 --Normal Mode
+
 local old_node_dig = minetest.node_dig
 function minetest.node_dig(pos, node, digger)
 	if adventures.unbreakable[pos] == nil then
@@ -46,12 +47,17 @@ minetest.register_on_joinplayer(function(obj)
 	adventures.started = true
 end)
 
-minetest.register_abm("adventures:deletion", {
+minetest.register_abm({
 	nodenames = {"adventures:invincible_source"},
 	interval = 0.5,
     chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		adventures.findArea(minetest.env:get_meta(pos), pos, {x=0,y=0,z=0}):remove()
+		local area = adventures.findArea(minetest.env:get_meta(pos), pos, {x=0,y=0,z=0})
+		if area ~= nil then
+			area:remove()
+		end
 		minetest.env:remove_node(pos)
 	end
 })
+
+minetest.register_entity("adventures:invincible_area" ,{})
