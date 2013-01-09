@@ -6,7 +6,7 @@ for pos,name in pairs(adventures.sources) do
 	if(name == "adventures:invincible_source") then
 		str = str..name..","..pos.x..","..pos.y..","..pos.z..","..
 		meta:get_int("x")..","..meta:get_int("y")..","..meta:get_int("z")..","..
-		meta:get_int("width")..","..meta:get_int("length")..","..meta:get_int("height")..","
+		meta:get_int("width")..","..meta:get_int("length")..","..meta:get_int("height")
 		.."\n"
 	end
 	saved = true
