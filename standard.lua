@@ -2,6 +2,7 @@
 
 local old_node_dig = minetest.node_dig
 function minetest.node_dig(pos, node, digger)
+	print("DIGGABLE: "..tostring(adventures.unbreakable[pos]))
 	if adventures.unbreakable[pos] == nil then
 		old_node_dig(pos, node, digger)
 	else
@@ -14,20 +15,20 @@ local function storeInvincibleNodes(data)
 	local offset = {x=data[5],y=data[6],z=data[7]}
 	local size = {x=data[8],y=data[9],z=data[10]}
 	local shift = {x=0,y=0,z=0}
-	if(width%2 == 0) then
+	if(size.x%2 == 0) then
 		shift.x = 0.5
 		shift.z = 0.5
 	end
-	if(height%2 == 0) then
+	if(size.y%2 == 0) then
 		shift.y = -0.5
 	end
 	for y=0,size.y-1,1 do
 	for z=0,size.z-1,1 do
 	for x=0,size.x-1,1 do
-		local nodePos = {x=(pos.x+offset.x-(size.x/2))+shift.x+x,
-						y=(pos.y+offset.y-(size.y/2))+shift.y+y,
-						z=(pos.z+offset.z-(size.x/2))+shift.z+z}
-		print(tostring(nodePos))
+		local nodePos = {x=(pos.x+offset.x-(size.x/2))+x,
+						y=(pos.y+offset.y-(size.y/2))+y,
+						z=(pos.z+offset.z-(size.x/2))+z}
+		print("X: "..nodePos.x.." Y: "..nodePos.y.." Z: "..nodePos.z)
 		adventures.unbreakable[nodePos] = true
 	end
 	end
@@ -36,7 +37,7 @@ end
 
 minetest.register_on_joinplayer(function(obj)
 	if adventures.started then return end
-	for _,data in ipairs(adventures.sourceData) do
+	for pos,data in pairs(adventures.sourceData) do
 		if(data[1] == "adventures:invincible_source") then
 			storeInvincibleNodes(data)
 		end
