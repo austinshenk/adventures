@@ -5,15 +5,11 @@ if(file ~= nil) then
 		if line == "initialized" or line == "" then
 			return
 		end
-		local comma = line:find(",")
+		local subdata = line:split(",")
 		local data = {}
-		data[1] = line:sub(start,comma-1)
-		start = comma+1
-		comma = line:find(",", start)
-		while(comma ~= nil) do
-			table.insert(data, tonumber(line:sub(start,comma-1)))
-			start = comma+1
-			comma = line:find(",", start)
+		data[1] = subdata[1]
+		for i=2,table.getn(subdata),1 do
+			data[i] = subdata[i]
 		end
 		adventures.sourceData[{x=data[2],y=data[3],z=data[4]}] = data
 	end
