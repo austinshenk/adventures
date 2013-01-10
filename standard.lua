@@ -2,34 +2,57 @@
 
 local old_node_dig = minetest.node_dig
 function minetest.node_dig(pos, node, digger)
-	print("DIGGABLE: "..tostring(adventures.unbreakable[pos]))
-	if adventures.unbreakable[pos] == nil then
+	if adventures.unbreakable[adventures.positionToString(pos)] ~= true then
 		old_node_dig(pos, node, digger)
 	else
 		return
 	end
 end
 
-local function storeInvincibleNodes(data)
-	local pos = {x=data[2],y=data[3],z=data[4]}
-	local offset = {x=data[5],y=data[6],z=data[7]}
-	local size = {x=data[8],y=data[9],z=data[10]}
-	local shift = {x=0,y=0,z=0}
-	if(size.x%2 == 0) then
-		shift.x = 0.5
-		shift.z = 0.5
+local function storeUnbreakableNodes(data)
+	--local pos = {x=data[2],y=data[3],z=data[4]}
+	--local offset = {x=data[5],y=data[6],z=data[7]}
+	--local size = {width=data[8],length=data[9],height=data[10]}
+	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
+					y=data[3]+data[6]-math.floor(data[10]/2),
+					z=data[4]+data[7]-math.floor(data[8]/2)}
+	for y=0,data[10]-1,1 do
+	for z=0,data[8]-1,1 do
+	for x=0,data[8]-1,1 do
+		adventures.unbreakable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
 	end
-	if(size.y%2 == 0) then
-		shift.y = -0.5
 	end
-	for y=0,size.y-1,1 do
-	for z=0,size.z-1,1 do
-	for x=0,size.x-1,1 do
-		local nodePos = {x=(pos.x+offset.x-(size.x/2))+x,
-						y=(pos.y+offset.y-(size.y/2))+y,
-						z=(pos.z+offset.z-(size.x/2))+z}
-		print("X: "..nodePos.x.." Y: "..nodePos.y.." Z: "..nodePos.z)
-		adventures.unbreakable[nodePos] = true
+	end
+end
+
+local function storeUnbuildableNodes(data)
+	--local pos = {x=data[2],y=data[3],z=data[4]}
+	--local offset = {x=data[5],y=data[6],z=data[7]}
+	--local size = {width=data[8],length=data[9],height=data[10]}
+	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
+					y=data[3]+data[6]-math.floor(data[10]/2),
+					z=data[4]+data[7]-math.floor(data[8]/2)}
+	for y=0,data[10]-1,1 do
+	for z=0,data[8]-1,1 do
+	for x=0,data[8]-1,1 do
+		adventures.unbuildable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
+	end
+	end
+	end
+end
+
+local function storeFullyProtectedNodes(data)
+	--local pos = {x=data[2],y=data[3],z=data[4]}
+	--local offset = {x=data[5],y=data[6],z=data[7]}
+	--local size = {width=data[8],length=data[9],height=data[10]}
+	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
+					y=data[3]+data[6]-math.floor(data[10]/2),
+					z=data[4]+data[7]-math.floor(data[8]/2)}
+	for y=0,data[10]-1,1 do
+	for z=0,data[8]-1,1 do
+	for x=0,data[8]-1,1 do
+		adventures.unbuildable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
+		adventures.unbreakable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
 	end
 	end
 	end
@@ -39,7 +62,7 @@ minetest.register_on_joinplayer(function(obj)
 	if adventures.started then return end
 	for pos,data in pairs(adventures.sourceData) do
 		if(data[1] == "adventures:invincible_source") then
-			storeInvincibleNodes(data)
+			storeUnbreakableNodes(data)
 		end
 	end
 	local file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
