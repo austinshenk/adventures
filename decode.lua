@@ -11,7 +11,7 @@ if(file ~= nil) then
 		for i=2,table.getn(subdata),1 do
 			data[i] = subdata[i]
 		end
-		adventures.sourceData[{x=data[2],y=data[3],z=data[4]}] = data
+		adventures.sourceData[adventures.positionToString({x=data[2],y=data[3],z=data[4]})] = data
 	end
 end
 file:close()
