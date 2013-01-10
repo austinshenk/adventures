@@ -6,7 +6,7 @@ minetest.register_on_joinplayer(function(obj)
 	if(file:read("*l") ~= adventures.creative) then
 		file:close()
 		for pos,data in pairs(adventures.sourceData) do
-			minetest.env:set_node(pos, {name=data[1]})
+			minetest.env:set_node({x=data[2],y=data[3],z=data[4]}, {name=data[1]})
 		end
 		file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
 		file:write(adventures.creative)
@@ -47,7 +47,7 @@ minetest.register_node("adventures:invincible_source" ,{
 	groups = {crumbly=3},
 	tiles = {"adventures_invinSource.png"},
 	on_construct = function(pos)
-		adventures.sources[pos] = minetest.env:get_node(pos).name
+		adventures.sources[adventures.positionToString(pos)] = {name=minetest.env:get_node(pos).name,pos=pos}
 		local meta = minetest.env:get_meta(pos)
 		local x = 0
 		local y = 0
@@ -55,7 +55,8 @@ minetest.register_node("adventures:invincible_source" ,{
 		local width = 2
 		local length = 2
 		local height = 1
-		if(adventures.sourceData[pos] ~= nil) then
+		local data = adventures.sourceData[adventures.positionToString(pos)]
+		if(data ~= nil) then
 			x = data[5]
 			y = data[6]
 			z = data[7]
@@ -139,7 +140,7 @@ minetest.register_node("adventures:invincible_source" ,{
 		meta:set_string("formspec", updateInvincibleSourceFormspec(meta))
 	end,
 	on_destruct = function(pos)
-		adventures.sources[pos] = nil
+		adventures.sources[adventures.positionToString(pos)] = nil
 		adventures.findArea(minetest.env:get_meta(pos), pos, {x=0,y=0,z=0}):remove()
 	end,
 })
