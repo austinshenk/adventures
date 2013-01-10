@@ -19,6 +19,10 @@ end
 
 local modpath=minetest.get_modpath("adventures")
 dofile(modpath.."/tables.lua")
+function adventures.positionToString(pos)
+	return tostring(pos.x)..tostring(pos.y)..tostring(pos.z)
+end
+
 function adventures.snapPosition(meta, pos)
 	local newPos = {x=pos.x,y=pos.y,z=pos.z}
 	if(meta:get_int("width")%2 == 0) then
