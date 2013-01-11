@@ -9,6 +9,16 @@ function minetest.node_dig(pos, node, digger)
 	end
 end
 
+local old_node_place = minetest.item_place
+function minetest.item_place(itemstack, placer, pointed_thing)
+	if adventures.unbuildable[adventures.positionToString(pointed_thing.above)] ~= true then
+		return old_node_place(itemstack, placer, pointed_thing)
+	else
+		return
+	end
+end
+
+
 local function storeUnbreakableNodes(data)
 	--local pos = {x=data[2],y=data[3],z=data[4]}
 	--local offset = {x=data[5],y=data[6],z=data[7]}
