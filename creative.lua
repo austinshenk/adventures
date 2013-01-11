@@ -14,7 +14,7 @@ minetest.register_on_joinplayer(function(obj)
 	else
 		file:close()
 		for pos,data in pairs(adventures.sourceData) do
-			adventures.sources[pos] = data[1]
+			adventures.sources[adventures.positionToString(pos)] = {name=data[1],pos={x=data[2],y=data[3],z=data[4]}}
 		end
 	end
 	adventures.started = true
@@ -73,6 +73,7 @@ minetest.register_node("adventures:invincible_source" ,{
 		meta:set_string("formspec", updateInvincibleSourceFormspec(meta))
 		local area = minetest.env:add_entity(pos, "adventures:invincible_area")
 		area:setpos(adventures.snapPosition(meta, pos))
+		area:set_properties({visual_size={x=width,y=height}})
 	end,
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.env:get_meta(pos)
