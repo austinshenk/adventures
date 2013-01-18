@@ -108,6 +108,7 @@ end
 minetest.register_on_newplayer(function(obj)
 	adventures.playerCheckPoints[obj:get_player_name()] = 0
 	adventures.requestSpawnPosition(obj)
+	--giveInitialStuff(obj)
 end)
 
 minetest.register_on_joinplayer(function(obj)
