@@ -1,9 +1,0 @@
-adventures = {}
-adventures.started = false
-adventures.creative = "creative"
-adventures.normal = "normal"
-adventures.sources = {}
-adventures.sourceData = {}
-adventures.unbreakable = {}
-adventures.unbuildable = {}
-adventures.areas = {}
