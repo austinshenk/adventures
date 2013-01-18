@@ -14,19 +14,27 @@ local old_node_place = minetest.item_place
 function minetest.item_place(itemstack, placer, pointed_thing)
 	if (not adventures.canBuild) then return end
 	if adventures.unbuildable[adventures.positionToString(pointed_thing.above)] ~= true then
-		old_node_place(itemstack, placer, pointed_thing)
+		return old_node_place(itemstack, placer, pointed_thing)
 	else
 		return
 	end
 end
 
-local function storeUnbreakableNodes(data)
+local function getStartNode(data)
 	--local pos = {x=data[2],y=data[3],z=data[4]}
 	--local offset = {x=data[5],y=data[6],z=data[7]}
 	--local size = {width=data[8],length=data[9],height=data[10]}
 	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
 					y=data[3]+data[6]-math.floor(data[10]/2),
 					z=data[4]+data[7]-math.floor(data[8]/2)}
+	if data[10]%2 == 0 then
+		start.y = start.y+1
+	end
+	return start
+end
+
+local function storeUnbreakableNodes(data)
+	local start = getStartNode(data)
 	for y=0,data[10]-1,1 do
 	for z=0,data[8]-1,1 do
 	for x=0,data[8]-1,1 do
@@ -37,9 +45,7 @@ local function storeUnbreakableNodes(data)
 end
 
 local function storeUnbuildableNodes(data)
-	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
-					y=data[3]+data[6]-math.floor(data[10]/2),
-					z=data[4]+data[7]-math.floor(data[8]/2)}
+	local start = getStartNode(data)
 	for y=0,data[10]-1,1 do
 	for z=0,data[8]-1,1 do
 	for x=0,data[8]-1,1 do
@@ -50,23 +56,20 @@ local function storeUnbuildableNodes(data)
 end
 
 local function storeFullyProtectedNodes(data)
-	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
-					y=data[3]+data[6]-math.floor(data[10]/2),
-					z=data[4]+data[7]-math.floor(data[8]/2)}
+	local start = getStartNode(data)
 	for y=0,data[10]-1,1 do
 	for z=0,data[8]-1,1 do
 	for x=0,data[8]-1,1 do
 		adventures.unbuildable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
 		adventures.unbreakable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
+		print("X: "..start.x+x.." Y: "..start.y+y.." Z: "..start.z+z)
 	end
 	end
 	end
 end
 
 local function storeSpawnPositions(data)
-	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
-					y=data[3]+data[6]-math.floor(data[10]/2),
-					z=data[4]+data[7]-math.floor(data[8]/2)}
+	local start = getStartNode(data)
 	for y=0,data[10]-1,1 do
 	for z=0,data[8]-1,1 do
 	for x=0,data[8]-1,1 do
@@ -78,9 +81,7 @@ local function storeSpawnPositions(data)
 end
 
 local function storeRespawnPositions(data)
-	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
-					y=data[3]+data[6]-math.floor(data[10]/2),
-					z=data[4]+data[7]-math.floor(data[8]/2)}
+	local start = getStartNode(data)
 	local points = {}
 	for y=0,data[10]-1,1 do
 	for z=0,data[8]-1,1 do
@@ -94,9 +95,7 @@ local function storeRespawnPositions(data)
 end
 
 local function storeCheckpointPositions(data)
-	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
-					y=data[3]+data[6]-math.floor(data[10]/2),
-					z=data[4]+data[7]-math.floor(data[8]/2)}
+	local start = getStartNode(data)
 	for y=0,data[10]-1,1 do
 	for z=0,data[8]-1,1 do
 	for x=0,data[8]-1,1 do
