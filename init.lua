@@ -25,7 +25,6 @@ local modpath=minetest.get_modpath("adventures")
 dofile(modpath.."/global.lua")
 dofile(modpath.."/decode.lua")
 local creative = minetest.setting_get("creative_mode")
-print("CREATIVE: "..creative)
 if creative == "1" then dofile(modpath.."/creative.lua") 
 else dofile(modpath.."/standard.lua")
 end
