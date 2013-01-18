@@ -42,6 +42,15 @@ for s,data in pairs(adventures.sources) do
 			","..meta:get_int("id")
 			.."\n"
 		end
+		if(data.name == "adventures:initial_stuff") then
+			str = str..data.name..","..data.pos.x..","..data.pos.y..","..data.pos.z
+			local meta = minetest.env:get_meta(data.pos)
+			local inv = minetest.get_inventory({type="detached",name="initialstuff"}):get_list("main")
+			for _,stack in pairs(inv) do
+				str = str..","..stack:get_name()..","..stack:get_count()
+			end
+			str = str.."\n"
+		end
 		saved = true
 	end
 end
