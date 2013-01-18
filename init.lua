@@ -21,6 +21,9 @@ if(file == nil) then
 	io.close()
 end
 
+local inv = minetest.create_detached_inventory("initialstuff")
+inv:set_size("initialstuff", 32)
+
 local modpath=minetest.get_modpath("adventures")
 dofile(modpath.."/global.lua")
 dofile(modpath.."/decode.lua")
