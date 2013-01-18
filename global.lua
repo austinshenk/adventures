@@ -103,25 +103,21 @@ end
 
 function adventures.requestRespawnPosition(player)
 	local id = adventures.playerCheckPoints[player:get_player_name()]
+	local points = adventures.respawnPoints[id]
+	local adjusted = false
+	local startID = id
+	while points == nil and id > 0 do
+		adjusted = true
+		id = id-1
+		points = adventures.respawnPoints[id]
+	end
 	if id == 0 then
 		return adventures.requestSpawnPosition(player)
-	else
-		local points = adventures.respawnPoints[id]
-		local adjusted = false
-		local startID = id
-		while points == nil and id > 0 do
-			adjusted = true
-			id = id-1
-			points = adventures.respawnPoints[id]
-		end
-		if id == 0 then
-			return adventures.requestSpawnPosition(player)
-		end
-		if adjusted then
-			print("Adventures Message: Respawn area #"..startID.." does not exist adjusted to respawn area #"..id)
-		end
-		local i = math.random(table.getn(points))
-		player:setpos(points[i])
-		return true
 	end
+	if adjusted then
+		print("Adventures Message: Respawn area #"..startID.." does not exist adjusted to respawn area #"..id)
+	end
+	local i = math.random(table.getn(points))
+	player:setpos(points[i])
+	return true
 end
