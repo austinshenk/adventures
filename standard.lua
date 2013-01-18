@@ -167,9 +167,9 @@ minetest.register_entity("adventures:checkpoint_area" ,{})
 minetest.register_on_respawnplayer(function(obj)
 	local id = adventures.playerCheckPoints[obj:get_player_name()]
 	if id == 0 then
-		adventures.requestSpawnPosition(obj)
+		return adventures.requestSpawnPosition(obj)
 	else
-		adventures.requestRespawnPosition(obj)
+		return adventures.requestRespawnPosition(obj)
 	end
 end)
 
