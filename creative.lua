@@ -143,7 +143,8 @@ for name,source in pairs(adventures.generalSources) do
 		end,
 		on_destruct = function(pos)
 			adventures.sources[adventures.positionToString(pos)] = nil
-			adventures.findArea(minetest.env:get_meta(pos), pos, {x=0,y=0,z=0}):remove()
+			local area = adventures.findArea(minetest.env:get_meta(pos), pos, {x=0,y=0,z=0})
+			if(area ~= nil) then area:remove() end
 		end,
 	})
 end
@@ -161,6 +162,9 @@ local function updateIDSourceFormspec(meta)
 		"label[2.875,3.125;ID]"..
 		"button[1.5,4;.75,.5;idminusten;<<]button[2.1,4;.75,.5;idminusone;<]label[2.75,3.875;"..meta:get_int("id").."]button[3.325,4;.75,.5;idplusone;>]button[3.925,4;.75,.5;idplusten;>>]"
 	return formspec
+end
+local function updateIDSourceInfotext(meta)
+	return "ID is "..meta:get_int("id")
 end
 
 for name,source in pairs(adventures.generalIDSources) do
@@ -205,6 +209,7 @@ for name,source in pairs(adventures.generalIDSources) do
 			meta:set_int("height", height)
 			meta:set_int("id", id)
 			meta:set_string("formspec", updateIDSourceFormspec(meta))
+			meta:set_string("infotext", updateIDSourceInfotext(meta))
 			local area = minetest.env:add_entity(pos, source.area.name)
 			area:setpos(adventures.snapPosition(meta, pos))
 			area:set_properties({visual_size={x=width,y=height}})
@@ -278,15 +283,35 @@ for name,source in pairs(adventures.generalIDSources) do
 			end
 			area:setpos(adventures.snapPosition(meta, pos))
 			meta:set_string("formspec", updateIDSourceFormspec(meta))
+			meta:set_string("infotext", updateIDSourceInfotext(meta))
 		end,
 		on_destruct = function(pos)
 			adventures.sources[adventures.positionToString(pos)] = nil
-			adventures.findArea(minetest.env:get_meta(pos), pos, {x=0,y=0,z=0}):remove()
+			local area = adventures.findArea(minetest.env:get_meta(pos), pos, {x=0,y=0,z=0})
+			if(area ~= nil) then area:remove() end
 		end,
 	})
 end
 
-
+minetest.register_node("adventures:initial_stuff", {
+	description = "Initial Stuff",
+	walkable = false,
+	groups = {crumbly=3},
+	tiles = {"adventures_initialStuff.png"},
+	on_construct = function(pos)
+		adventures.sources[adventures.positionToString(pos)] = {name="adventures:initial_stuff",pos=pos}
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("formspec", "size[8,9]"..
+			"list[detached;initialstuff;0,0;8,4;]"..
+			"list[current_player;main;0,5;8,4;]")
+		local data = adventures.sourceData[adventures.positionToString(pos)]
+		if(data ~= nil) then
+		end
+	end,
+	on_destruct = function(pos)
+		adventures.sources[adventures.positionToString(pos)] = nil
+	end,
+})
 	
 minetest.register_chatcommand("save", {
 	description = "saveAdventure : Save all node data to files",
