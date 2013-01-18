@@ -2,6 +2,7 @@ adventures = {}
 adventures.started = false
 adventures.creative = "creative"
 adventures.normal = "normal"
+adventures.initialStuff = {}
 adventures.sources = {}
 adventures.sourceData = {}
 adventures.canBreak = true
