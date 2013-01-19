@@ -302,8 +302,9 @@ minetest.register_node("adventures:initial_stuff", {
 		adventures.sources[adventures.positionToString(pos)] = {name="adventures:initial_stuff",pos=pos}
 		local meta = minetest.env:get_meta(pos)
 		meta:set_string("formspec", "size[8,9]"..
-			"list[detached;initialstuff;0,0;8,4;]"..
+			"list[detached:initialstuff;main;0,0;8,4;]"..
 			"list[current_player;main;0,5;8,4;]")
+		meta:get_inventory():set_size("main", 32)
 		local data = adventures.sourceData[adventures.positionToString(pos)]
 		if(data ~= nil) then
 		end
