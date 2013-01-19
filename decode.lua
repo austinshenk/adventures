@@ -1,4 +1,17 @@
-local file = io.open(minetest.get_worldpath().."/adventures_sources", "r")
+local file = io.open(minetest.get_worldpath().."/adventures_init", "r")
+if(file ~= nil) then
+	local i = 1
+	local inv = minetest.get_inventory({type="detached",name="initialstuff"})
+	for line in file:lines() do
+		if line ~= "initialized" and line ~= ",0" then
+			local values = line:split(",")
+			inv:set_stack("main", i, values[1].." "..values[2])
+			i = i+1
+		end
+	end
+end
+
+file = io.open(minetest.get_worldpath().."/adventures_sources", "r")
 if(file ~= nil) then
 	for line in file:lines() do
 		if line ~= "initialized" and line ~= "" then
