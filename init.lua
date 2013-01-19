@@ -21,11 +21,22 @@ if(file == nil) then
 	io.close()
 end
 
-local inv = minetest.create_detached_inventory("initialstuff")
-inv:set_size("initialstuff", 32)
-
 local modpath=minetest.get_modpath("adventures")
 dofile(modpath.."/global.lua")
+
+local inv = minetest.create_detached_inventory("initialstuff", {
+	allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+		return count
+	end,
+	allow_put = function(inv, listname, index, stack, player)
+		return stack:get_count()
+	end,
+	allow_take = function(inv, listname, index, stack, player)
+		return stack:get_count()
+	end,
+	})
+inv:set_size("main", 32)
+
 dofile(modpath.."/decode.lua")
 local creative = minetest.setting_get("creative_mode")
 if creative == "1" then dofile(modpath.."/creative.lua") 
