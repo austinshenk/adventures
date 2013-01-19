@@ -122,3 +122,14 @@ function adventures.requestRespawnPosition(player)
 	player:setpos(points[i])
 	return true
 end
+
+function adventures.saveInitialStuff()
+	local file = io.open(minetest.get_worldpath().."/adventures_init", "w")
+	local str = ""
+	local main = minetest.get_inventory({type="detached",name="initialstuff"}):get_list("main")
+	for _,stack in pairs(main) do
+		str = str..stack:get_name()..","..stack:get_count().."\n"
+	end
+	file:write(str)
+	file:close()
+end
