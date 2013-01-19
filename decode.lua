@@ -6,8 +6,8 @@ if(file ~= nil) then
 		if line ~= "initialized" and line ~= ",0" then
 			local values = line:split(",")
 			inv:set_stack("main", i, values[1].." "..values[2])
-			i = i+1
 		end
+		i = i+1
 	end
 end
 
