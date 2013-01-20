@@ -16,6 +16,7 @@ adventures.playerCheckPoints = {}
 adventures.autoSave = true
 adventures.saveTime = 60
 adventures.currentTime = 0
+adventures.quests = {}
 
 adventures.generalSources = {}
 adventures.generalSources["adventures:unbreakable_source"] = {
