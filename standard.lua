@@ -62,7 +62,6 @@ local function storeFullyProtectedNodes(data)
 	for x=0,data[8]-1,1 do
 		adventures.unbuildable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
 		adventures.unbreakable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
-		print("X: "..start.x+x.." Y: "..start.y+y.." Z: "..start.z+z)
 	end
 	end
 	end
@@ -105,10 +104,13 @@ local function storeCheckpointPositions(data)
 	end
 end
 
+local function giveInitialStuff(player)
+	player:get_inventory():set_list("main", minetest.get_inventory({type="detached",name="initialstuff"}):get_list("main"))
+end
 minetest.register_on_newplayer(function(obj)
 	adventures.playerCheckPoints[obj:get_player_name()] = 0
 	adventures.requestSpawnPosition(obj)
-	--giveInitialStuff(obj)
+	giveInitialStuff(obj)
 end)
 
 minetest.register_on_joinplayer(function(obj)
