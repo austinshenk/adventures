@@ -305,8 +305,43 @@ minetest.register_node("adventures:initial_stuff", {
 			"list[detached:initialstuff;main;0,0;8,4;]"..
 			"list[current_player;main;0,5;8,4;]")
 		meta:get_inventory():set_size("main", 32)
-		local data = adventures.sourceData[adventures.positionToString(pos)]
-		if(data ~= nil) then
+	end,
+	on_destruct = function(pos)
+		adventures.sources[adventures.positionToString(pos)] = nil
+	end,
+})
+
+local function updateQuest(meta)
+	return "size[8,9]"..
+				"field[0.25,0.25;5,1;name;Quest Name;"..meta:get_string("name").."]button[5.5,0;2,0.75;save;Save]"..
+				"field[0.25,1.25;5,1;objective;Objective;"..meta:get_string("objective").."]"..
+				"field[0.25,2.25;5,1;description;Description;"..meta:get_string("description").."]"..
+				"list[context;main;0,3;2,2]"..
+				"list[context;main;6,3;2,2;4]"..
+				"list[current_player;main;0,5;8,4]"
+end
+
+minetest.register_node("adventures:quest", {
+	description = "Quest",
+	walkable = false,
+	groups = {crumbly=3},
+	tiles = {"adventures_quest.png"},
+	on_construct = function(pos)
+		adventures.sources[adventures.positionToString(pos)] = {name="adventures:quest",pos=pos}
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("name", "")
+		meta:set_string("objective", "")
+		meta:set_string("description", "")
+		meta:set_string("formspec", updateQuest(meta))
+		meta:get_inventory():set_size("main", 8)
+	end,
+	on_receive_fields = function(pos, formname, fields, sender)
+		local meta = minetest.env:get_meta(pos)
+		if fields.save then
+			meta:set_string("name", fields.name)
+			meta:set_string("objective", fields.objective)
+			meta:set_string("description", fields.description)
+			meta:set_string("formspec", updateQuest(meta))
 		end
 	end,
 	on_destruct = function(pos)
