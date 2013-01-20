@@ -129,7 +129,7 @@ function adventures.saveInitialStuff()
 	local str = ""
 	local main = minetest.get_inventory({type="detached",name="initialstuff"}):get_list("main")
 	for _,stack in pairs(main) do
-		str = str..stack:get_name()..","..stack:get_count().."\n"
+		str = str..stack:get_name().."|"..stack:get_count().."\n"
 	end
 	file:write(str)
 	file:close()

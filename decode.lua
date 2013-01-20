@@ -4,7 +4,7 @@ if(file ~= nil) then
 	local inv = minetest.get_inventory({type="detached",name="initialstuff"})
 	for line in file:lines() do
 		if line ~= "initialized" and line ~= ",0" then
-			local values = line:split(",")
+			local values = line:split("|")
 			inv:set_stack("main", i, values[1].." "..values[2])
 		end
 		i = i+1
@@ -15,7 +15,7 @@ file = io.open(minetest.get_worldpath().."/adventures_sources", "r")
 if(file ~= nil) then
 	for line in file:lines() do
 		if line ~= "initialized" and line ~= "" then
-			local subdata = line:split(",")
+			local subdata = line:split("|")
 			local data = {}
 			data[1] = subdata[1]
 			for i=2,table.getn(subdata),1 do
@@ -37,7 +37,7 @@ file = io.open(minetest.get_worldpath().."/adventures_checkpoints", "r")
 if(file ~= nil) then
 	for line in file:lines() do
 		if line ~= "initialized" and line ~= "" then
-			local data = line:split(",")
+			local data = line:split("|")
 			adventures.playerCheckPoints[data[1]] = tonumber(data[2])
 		end
 	end

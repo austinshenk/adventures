@@ -179,7 +179,7 @@ local function savePlayerID()
 	local file = io.open(minetest.get_worldpath().."/adventures_checkpoints", "w")
 	local str = ""
 	for player, id in pairs(adventures.playerCheckPoints) do
-		str = str..player..","..id.."\n"
+		str = str..player.."|"..id.."\n"
 	end
 	file:write(str)
 	file:close()
