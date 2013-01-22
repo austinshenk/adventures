@@ -17,6 +17,7 @@ adventures.autoSave = true
 adventures.saveTime = 60
 adventures.currentTime = 0
 adventures.quests = {}
+adventures.playerQuests = {}
 
 adventures.generalSources = {}
 adventures.generalSources["adventures:unbreakable_source"] = {
@@ -129,8 +130,21 @@ function adventures.saveInitialStuff()
 	local str = ""
 	local main = minetest.get_inventory({type="detached",name="initialstuff"}):get_list("main")
 	for _,stack in pairs(main) do
-		str = str..stack:get_name().."|"..stack:get_count().."\n"
+		str = str..stack:get_name().."`"..stack:get_count().."\n"
 	end
 	file:write(str)
 	file:close()
+end
+
+function adventures.getStartNode(data)
+	--local pos = {x=data[2],y=data[3],z=data[4]}
+	--local offset = {x=data[5],y=data[6],z=data[7]}
+	--local size = {width=data[8],length=data[9],height=data[10]}
+	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
+					y=data[3]+data[6]-math.floor(data[10]/2),
+					z=data[4]+data[7]-math.floor(data[8]/2)}
+	if data[10]%2 == 0 then
+		start.y = start.y+1
+	end
+	return start
 end
