@@ -1,4 +1,9 @@
 --Normal Mode
+local modpath=minetest.get_modpath("adventures")
+dofile(modpath.."/standardInitialStuff.lua")
+dofile(modpath.."/standardProtect.lua")
+dofile(modpath.."/standardQuest.lua")
+dofile(modpath.."/standardSpawning.lua")
 
 local old_node_dig = minetest.node_dig
 function minetest.node_dig(pos, node, digger)
@@ -20,119 +25,29 @@ function minetest.item_place(itemstack, placer, pointed_thing)
 	end
 end
 
-local function getStartNode(data)
-	--local pos = {x=data[2],y=data[3],z=data[4]}
-	--local offset = {x=data[5],y=data[6],z=data[7]}
-	--local size = {width=data[8],length=data[9],height=data[10]}
-	local start = {x=data[2]+data[5]-math.floor(data[8]/2),
-					y=data[3]+data[6]-math.floor(data[10]/2),
-					z=data[4]+data[7]-math.floor(data[8]/2)}
-	if data[10]%2 == 0 then
-		start.y = start.y+1
-	end
-	return start
-end
-
-local function storeUnbreakableNodes(data)
-	local start = getStartNode(data)
-	for y=0,data[10]-1,1 do
-	for z=0,data[8]-1,1 do
-	for x=0,data[8]-1,1 do
-		adventures.unbreakable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
-	end
-	end
-	end
-end
-
-local function storeUnbuildableNodes(data)
-	local start = getStartNode(data)
-	for y=0,data[10]-1,1 do
-	for z=0,data[8]-1,1 do
-	for x=0,data[8]-1,1 do
-		adventures.unbuildable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
-	end
-	end
-	end
-end
-
-local function storeFullyProtectedNodes(data)
-	local start = getStartNode(data)
-	for y=0,data[10]-1,1 do
-	for z=0,data[8]-1,1 do
-	for x=0,data[8]-1,1 do
-		adventures.unbuildable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
-		adventures.unbreakable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
-	end
-	end
-	end
-end
-
-local function storeSpawnPositions(data)
-	local start = getStartNode(data)
-	for y=0,data[10]-1,1 do
-	for z=0,data[8]-1,1 do
-	for x=0,data[8]-1,1 do
-		table.insert(adventures.spawnPoints, {x=start.x+x,y=start.y+y,z=start.z+z})
-		adventures.unbuildable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
-	end
-	end
-	end
-end
-
-local function storeRespawnPositions(data)
-	local start = getStartNode(data)
-	local points = {}
-	for y=0,data[10]-1,1 do
-	for z=0,data[8]-1,1 do
-	for x=0,data[8]-1,1 do
-		table.insert(points, {x=start.x+x,y=start.y+y,z=start.z+z})
-		adventures.unbuildable[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = true
-	end
-	end
-	end
-	adventures.respawnPoints[data[11]] = points
-end
-
-local function storeCheckpointPositions(data)
-	local start = getStartNode(data)
-	for y=0,data[10]-1,1 do
-	for z=0,data[8]-1,1 do
-	for x=0,data[8]-1,1 do
-		adventures.checkPoints[adventures.positionToString({x=start.x+x,y=start.y+y,z=start.z+z})] = data[11]
-	end
-	end
-	end
-end
-
-local function giveInitialStuff(player)
-	player:get_inventory():set_list("main", minetest.get_inventory({type="detached",name="initialstuff"}):get_list("main"))
-end
 minetest.register_on_newplayer(function(obj)
 	adventures.playerCheckPoints[obj:get_player_name()] = 0
 	adventures.requestSpawnPosition(obj)
-	giveInitialStuff(obj)
+	adventures.giveInitialStuff(obj)
 end)
 
 minetest.register_on_joinplayer(function(obj)
 	if adventures.started then return end
 	for pos,data in pairs(adventures.sourceData) do
 		if(data[1] == "adventures:unbreakable_source") then
-			storeUnbreakableNodes(data)
-		end
-		if(data[1] == "adventures:unbuildable_source") then
-			storeUnbuildableNodes(data)
-		end
-		if(data[1] == "adventures:fullprotect_source") then
-			storeFullyProtectedNodes(data)
-		end
-		if(data[1] == "adventures:spawn_source") then
-			storeSpawnPositions(data)
-		end
-		if(data[1] == "adventures:respawn_source") then
-			storeRespawnPositions(data)
-		end
-		if(data[1] == "adventures:checkpoint_source") then
-			storeCheckpointPositions(data)
+			adventures.storeUnbreakableNodes(data)
+		elseif(data[1] == "adventures:unbuildable_source") then
+			adventures.storeUnbuildableNodes(data)
+		elseif(data[1] == "adventures:fullprotect_source") then
+			adventures.storeFullyProtectedNodes(data)
+		elseif(data[1] == "adventures:spawn_source") then
+			adventures.storeSpawnPositions(data)
+		elseif(data[1] == "adventures:respawn_source") then
+			adventures.storeRespawnPositions(data)
+		elseif(data[1] == "adventures:checkpoint_source") then
+			adventures.storeCheckpointPositions(data)
+		elseif(data[1] == "adventures:quest") then
+			adventures.storeQuestData(data)
 		end
 	end
 	local file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
@@ -179,12 +94,11 @@ local function savePlayerID()
 	local file = io.open(minetest.get_worldpath().."/adventures_checkpoints", "w")
 	local str = ""
 	for player, id in pairs(adventures.playerCheckPoints) do
-		str = str..player.."|"..id.."\n"
+		str = str..player.."`"..id.."\n"
 	end
 	file:write(str)
 	file:close()
 end
-
 minetest.register_globalstep(function(dtime)
 	for _,player in pairs(minetest.get_connected_players()) do
 		local id = adventures.checkPoints[adventures.positionToString(adventures.snapPlayerPosition(player:getpos()))]
