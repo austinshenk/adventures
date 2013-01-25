@@ -4,6 +4,7 @@ dofile(modpath.."/standardInitialStuff.lua")
 dofile(modpath.."/standardProtect.lua")
 dofile(modpath.."/standardQuest.lua")
 dofile(modpath.."/standardSpawning.lua")
+dofile(modpath.."/Book.lua")
 
 local old_node_dig = minetest.node_dig
 function minetest.node_dig(pos, node, digger)
