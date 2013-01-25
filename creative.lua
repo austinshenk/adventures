@@ -3,6 +3,7 @@ local modpath=minetest.get_modpath("adventures")
 dofile(modpath.."/creativeGeneral.lua")
 dofile(modpath.."/creativeInitialStuff.lua")
 dofile(modpath.."/creativeQuest.lua")
+dofile(modpath.."/Book.lua")
 
 minetest.register_on_joinplayer(function(obj)
 	if adventures.started then return end
@@ -33,5 +34,58 @@ minetest.register_chatcommand("save", {
 		else
 			minetest.chat_send_player(name, "ADVENTURE NOT SAVED")
 		end
+	end,
+})
+
+
+local function showBookData(name)
+	local story = adventures.registered_books[name]
+	return "size[5,5]field[0.25,0.25;3,1;bookname;;"..name.."]textarea[0.25,1;5,4;bookstory;;"..story.."]"..
+			"button[2.75,0;1,0.75;bookreturn;<-]button[3.5,0;1,0.75;booksave;Save]button[4.5,0;.75,.75;bookdelete;X]"
+end
+local function showBookList()
+	local str = "field[0.25,0.25;4,1;bookname;;]button[4,0;1.5,0.75;bookcreate;Create]"
+	local x = 0
+	local y = 1
+	for name,story in pairs(adventures.registered_books) do
+		if story ~= nil then
+			str = str.."button["..x..","..y..";1.25,0.75;"..name..";"..name.."]"
+			x = x+1
+			if x == 5 then
+				x = 0
+				y = y+1
+			end
+		end
+	end
+	str = "size[5.5,"..(y+3).."]"..str
+	return str
+end
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if fields.bookreturn then
+		minetest.show_formspec(player:get_player_name(), "adventures:books", showBookList())
+	end
+	if fields.bookcreate then
+		adventures.registered_books[fields.bookname] = ""
+		print("NAME: "..fields.bookname)
+		minetest.show_formspec(player:get_player_name(), "adventures:books", showBookList())
+	end
+	if fields.bookdelete then
+		adventures.registered_books[fields.bookname] = nil
+		minetest.show_formspec(player:get_player_name(), "adventures:books", showBookList())
+	end
+	if fields.booksave then
+		adventures.registered_books[fields.bookname] = fields.bookstory
+		minetest.show_formspec(player:get_player_name(), "adventures:book("..fields.bookname..")", showBookData(fields.bookname))
+	end
+	for name,story in pairs(adventures.registered_books) do
+		if fields[name] then
+			minetest.show_formspec(player:get_player_name(), "adventures:book("..name..")", showBookData(name))
+		end
+	end
+end)
+minetest.register_chatcommand("books", {
+	description = "saveAdventure : Save all node data to files",
+	func = function(name, param)
+		minetest.show_formspec(name, "adventures:books", showBookList())
 	end,
 })
