@@ -18,6 +18,7 @@ adventures.saveTime = 60
 adventures.currentTime = 0
 adventures.quests = {}
 adventures.playerQuests = {}
+adventures.registered_books = {}
 
 adventures.generalSources = {}
 adventures.generalSources["adventures:unbreakable_source"] = {
