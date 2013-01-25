@@ -54,4 +54,12 @@ for s,data in pairs(adventures.sources) do
 end
 file:write(str)
 file:close()
+
+file = io.open(minetest.get_worldpath().."/adventures_books", "w")
+str = ""
+for name,story in pairs(adventures.registered_books) do
+	str = str..name.."`"..story.."\n"
+end
+file:write(str)
+file:close()
 return saved
