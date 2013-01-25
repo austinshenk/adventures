@@ -10,6 +10,7 @@ if(file ~= nil) then
 		i = i+1
 	end
 end
+file:close()
 
 file = io.open(minetest.get_worldpath().."/adventures_sources", "r")
 if(file ~= nil) then
@@ -32,8 +33,25 @@ if(file ~= nil) then
 end
 file:close()
 
-file = io.open(minetest.get_worldpath().."/adventures_checkpoints", "r")
+file = io.open(minetest.get_worldpath().."/adventures_books", "r")
+if(file ~= nil) then
+	local story = ""
+	for line in file:lines() do
+		if line ~= "initialized" and line ~= "" then
+			local data = line:split("`")
+			story = story..data[2].."\n"
+			file:read("*l")
+			while line:find("`") == nil do
+				story = story..line.."\n"
+				file:read("*l")
+			end
+			adventures.registered_books[data[1]] = story
+		end
+	end
+end
+file:close()
 
+file = io.open(minetest.get_worldpath().."/adventures_checkpoints", "r")
 if(file ~= nil) then
 	for line in file:lines() do
 		if line ~= "initialized" and line ~= "" then
@@ -42,3 +60,4 @@ if(file ~= nil) then
 		end
 	end
 end
+file:close()
