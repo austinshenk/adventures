@@ -17,7 +17,6 @@ adventures.autoSave = true
 adventures.saveTime = 60
 adventures.currentTime = 0
 adventures.quests = {}
-adventures.currentQuests = {}
 adventures.currentObjectives = {}
 adventures.currentObjectives["Collect"] = {}
 adventures.currentObjectives["Return"] = {}
@@ -152,4 +151,16 @@ function adventures.getStartNode(data)
 		start.y = start.y+1
 	end
 	return start
+end
+
+function adventures.checkQuestComplete(quest)
+	local objs = adventures.quests[quest].objectives
+	for _,obj in pairs(objs) do
+		if not obj.completed then
+			return
+		end
+	end
+	adventures.quests[quest].completed = true
+	local meta = minetest.env:get_meta(adventures.quests[quest].source)
+	meta:set_string("formspec", adventures.updateQuestFormspec(meta, adventures.quests[quest].objectives))
 end
