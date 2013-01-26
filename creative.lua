@@ -39,7 +39,11 @@ minetest.register_chatcommand("save", {
 
 
 local function showBookData(name)
-	local story = adventures.registered_books[name]
+	local lines = adventures.registered_books[name]
+	local story = ""
+	for _,line in pairs(lines) do
+		story = story..line.."\n"
+	end
 	return "size[5,5]field[0.25,0.25;3,1;bookname;;"..name.."]textarea[0.25,1;5,4;bookstory;;"..story.."]"..
 			"button[2.75,0;1,0.75;bookreturn;<-]button[3.5,0;1,0.75;booksave;Save]button[4.5,0;.75,.75;bookdelete;X]"
 end
@@ -65,7 +69,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		minetest.show_formspec(player:get_player_name(), "adventures:books", showBookList())
 	end
 	if fields.bookcreate then
-		adventures.registered_books[fields.bookname] = ""
+		adventures.registered_books[fields.bookname] = {}
 		print("NAME: "..fields.bookname)
 		minetest.show_formspec(player:get_player_name(), "adventures:books", showBookList())
 	end
@@ -74,7 +78,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		minetest.show_formspec(player:get_player_name(), "adventures:books", showBookList())
 	end
 	if fields.booksave then
-		adventures.registered_books[fields.bookname] = fields.bookstory
+		local lines = fields.bookstory:split("\n")
+		local story = {}
+		for _,line in pairs(lines) do
+			table.insert(story, line)
+		end
+		adventures.registered_books[fields.bookname] = story
 		minetest.show_formspec(player:get_player_name(), "adventures:book("..fields.bookname..")", showBookData(fields.bookname))
 	end
 	for name,story in pairs(adventures.registered_books) do
