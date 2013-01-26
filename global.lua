@@ -17,7 +17,11 @@ adventures.autoSave = true
 adventures.saveTime = 60
 adventures.currentTime = 0
 adventures.quests = {}
-adventures.playerQuests = {}
+adventures.currentQuests = {}
+adventures.currentObjectives = {}
+adventures.currentObjectives["Collect"] = {}
+adventures.currentObjectives["Return"] = {}
+adventures.currentObjectives["Kill"] = {}
 adventures.registered_books = {}
 
 adventures.generalSources = {}
