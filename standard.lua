@@ -11,17 +11,16 @@ function minetest.node_dig(pos, node, digger)
 	if (not adventures.canBreak) then return end
 	if adventures.unbreakable[adventures.positionToString(pos)] ~= true then
 		for _,obj in pairs(adventures.currentObjectives["Collect"]) do
-			local o = adventures.currentQuests[obj.quest].objectives[obj.index]
-			print(o.description)
+			local o = adventures.quests[obj.quest].objectives[obj.index]
 			if not o.completed then
 				if o.content == node.name then
 					local count = o.count+1
 					if count >= o.total then
-						adventures.currentQuests[obj.quest].objectives[obj.index].completed = true
-						minetest.chat_send_all(obj.quest.." completed")
-						count = total
+						adventures.quests[obj.quest].objectives[obj.index].completed = true
+						minetest.chat_send_all("QUEST: "..obj.quest.." completed")
+						adventures.checkQuestComplete(obj.quest)
 					end
-					adventures.currentQuests[obj.quest].objectives[obj.index].count = count
+					adventures.quests[obj.quest].objectives[obj.index].count = count
 				end
 			end
 		end
