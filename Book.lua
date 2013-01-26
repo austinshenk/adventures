@@ -16,3 +16,16 @@ for name,story in pairs(adventures.registered_books) do
 		end,
 	})
 end
+
+local function showQuestLog()
+	local str = ""
+	return str
+end
+minetest.register_tool("adventures:questLog", {
+	description = "Quest Log",
+	inventory_image = "default_book.png",
+	stack_max = 1,
+	on_use = function(itemstack, user, pointed_thing)
+		minetest.show_formspec(user:get_player_name(), "adventures:questLog", showQuestLog())
+	end,
+})
