@@ -35,15 +35,15 @@ file:close()
 
 file = io.open(minetest.get_worldpath().."/adventures_books", "r")
 if(file ~= nil) then
-	local story = ""
+	local story = {}
 	for line in file:lines() do
 		if line ~= "initialized" and line ~= "" then
 			local data = line:split("`")
-			story = story..data[2].."\n"
-			file:read("*l")
-			while line:find("`") == nil do
-				story = story..line.."\n"
-				file:read("*l")
+			line = file:read("*l")
+			while line ~= nil and line:find("`") == nil do
+				print("LINE: "..line)
+				table.insert(story, line)
+				line = file:read("*l")
 			end
 			adventures.registered_books[data[1]] = story
 		end
