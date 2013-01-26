@@ -58,7 +58,7 @@ file:close()
 file = io.open(minetest.get_worldpath().."/adventures_books", "w")
 str = ""
 for name,story in pairs(adventures.registered_books) do
-	str = str..name.."`"..story.."\n"
+	str = str..name.."`\n"..story.."\n"
 end
 file:write(str)
 file:close()
