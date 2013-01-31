@@ -32,11 +32,20 @@ function adventures.updateQuestFormspec(meta, objs)
 	if quest ~= nil then
 		if not quest.accepted then
 			str = str.."button[3.25,"..(y-2)..";1.5,1;accept;Accept]"
-		elseif quest.completed then
-			str = str.."label[3.25,"..(y-2)..";Completed!]"
+		elseif not quest.completed then
+			str = str.."label[3.25,"..(y-2)..";"..meta:get_string("name").." In Progress.]"
+		elseif quest.completed and not quest.turnedIn then
+			str = str.."label[3.25,"..(y-2)..";"..meta:get_string("name").." Completed!]"..
+						"button[3.25,"..(y-1)..";1.5,1;redeem;Turn In]"
+		elseif quest.turnedIn then
+			--Draw Nothing
 		end
 	end
+	drawnReturnBox = false
 	for i,obj in ipairs(objs) do
+		if obj.command == "Return" and not drawnReturnBox then
+			str = str.."list[context;return;3.5,"..(y-3)..";1,1;]"
+		end
 		str = str.."label[1,"..(i/2)..";"..obj.description.."]"
 	end
 	y = y+4
@@ -48,7 +57,7 @@ function adventures.storeQuestData(data)
 	local pos = {x=data[2],y=data[3],z=data[4]}
 	local meta = minetest.env:get_meta(pos)
 	local objs = convertObjectiveString(meta:get_string("objective"), meta:get_string("description"))
-	adventures.quests[meta:get_string("name")] = {source=pos, objectives = objs, accepted=false, completed=false, active=false}
+	adventures.quests[meta:get_string("name")] = {source=pos, objectives = objs, accepted=false, completed=false, turnedIn=false, active=false}
 	meta:set_string("formspec", adventures.updateQuestFormspec(meta, objs))
 end
 
@@ -59,9 +68,14 @@ minetest.register_node("adventures:quest", {
 	tiles = {"adventures_quest.png"},
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.env:get_meta(pos)
+		local objs = adventures.quests[meta:get_string("name")].objectives
 		if fields.accept then
+			for _,player in pairs(minetest.get_connected_players()) do
+				for _,stack in pairs(meta:get_inventory():get_list("items")) do
+					player:get_inventory():add_item("main", stack)
+				end
+			end
 			adventures.quests[meta:get_string("name")].accepted = true
-			local objs = adventures.quests[meta:get_string("name")].objectives
 			for i,obj in ipairs(objs) do
 				if obj.command == "Return" then
 					table.insert(adventures.currentObjectives["Return"], {quest=meta:get_string("name"), index=i})
@@ -71,22 +85,20 @@ minetest.register_node("adventures:quest", {
 					table.insert(adventures.currentObjectives["Kill"], {quest=meta:get_string("name"), index=i})
 				end
 			end
-			meta:set_string("formspec", adventures.updateQuestFormspec(meta, objs))
+		elseif fields.redeem then
+			adventures.quests[meta:get_string("name")].turnedIn = true
+			for _,player in pairs(minetest.get_connected_players()) do
+				for _,stack in pairs(meta:get_inventory():get_list("reward")) do
+					player:get_inventory():add_item("main", stack)
+				end
+			end
 		end
+		meta:set_string("formspec", adventures.updateQuestFormspec(meta, objs))
 	end,
 	allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
 	return 0 end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 	return 0 end,
 	allow_metadata_inventory_take = function(pos, listname, index, stack, player)
-	if listname == "reward" then
-		local meta = minetest.env:get_meta(pos)
-		local quest = adventures.quests[meta:get_string("name")]
-		if quest == nil then
-			return 0
-		elseif not quest.completed then
-			return 0
-		end
-	end
-	return stack:get_count() end
+	return 0 end,
 })
