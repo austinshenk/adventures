@@ -1,7 +1,15 @@
-adventures.saveInitialStuff()
-local file = io.open(minetest.get_worldpath().."/adventures_sources", "w")
-local saved  = false
+local file = io.open(minetest.get_worldpath().."/adventures_init", "w")
 local str = ""
+local main = minetest.get_inventory({type="detached",name="initialstuff"}):get_list("main")
+for _,stack in pairs(main) do
+	str = str..stack:get_name().."`"..stack:get_count().."\n"
+end
+file:write(str)
+file:close()
+	
+file = io.open(minetest.get_worldpath().."/adventures_sources", "w")
+local saved  = false
+str = ""
 for s,data in pairs(adventures.sources) do
 	if data ~= nil then
 		local meta = minetest.env:get_meta(data.pos)
