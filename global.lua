@@ -129,17 +129,6 @@ function adventures.requestRespawnPosition(player)
 	return true
 end
 
-function adventures.saveInitialStuff()
-	local file = io.open(minetest.get_worldpath().."/adventures_init", "w")
-	local str = ""
-	local main = minetest.get_inventory({type="detached",name="initialstuff"}):get_list("main")
-	for _,stack in pairs(main) do
-		str = str..stack:get_name().."`"..stack:get_count().."\n"
-	end
-	file:write(str)
-	file:close()
-end
-
 function adventures.getStartNode(data)
 	--local pos = {x=data[2],y=data[3],z=data[4]}
 	--local offset = {x=data[5],y=data[6],z=data[7]}
