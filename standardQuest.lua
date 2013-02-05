@@ -56,6 +56,7 @@ end
 function adventures.storeQuestData(data)
 	local pos = {x=data[2],y=data[3],z=data[4]}
 	local meta = minetest.env:get_meta(pos)
+	if adventures.quests[meta:get_string("name")] ~= nil then return end
 	local objs = convertObjectiveString(meta:get_string("objective"), meta:get_string("description"))
 	adventures.quests[meta:get_string("name")] = {source=pos, objectives = objs, accepted=false, completed=false, turnedIn=false, active=false}
 	meta:set_string("formspec", adventures.updateQuestFormspec(meta, objs))
@@ -86,6 +87,7 @@ minetest.register_node("adventures:quest", {
 					table.insert(adventures.currentObjectives["Kill"], {quest=meta:get_string("name"), index=i})
 				end
 			end
+			adventures.saveQuestProgress()
 		elseif fields.redeem then
 			adventures.quests[meta:get_string("name")].turnedIn = true
 			for _,player in pairs(minetest.get_connected_players()) do
@@ -93,6 +95,7 @@ minetest.register_node("adventures:quest", {
 					player:get_inventory():add_item("main", stack)
 				end
 			end
+			adventures.saveQuestProgress()
 		end
 		meta:set_string("formspec", adventures.updateQuestFormspec(meta, objs))
 	end,
