@@ -65,6 +65,7 @@ minetest.register_on_joinplayer(function(obj)
 			adventures.storeQuestData(data)
 		end
 	end
+	adventures.sourceData = nil
 	local file = io.open(minetest.get_worldpath().."/adventures_previousmode", "w")
 	file:write(adventures.normal)
 	file:close()
@@ -114,6 +115,13 @@ local function savePlayerID()
 	file:write(str)
 	file:close()
 end
+local function adventures.saveQuestProgress()
+	local file = io.open(minetest.get_worldpath().."adventures_quests", "w")
+	local str = minetest.serialize(adventures.quests).."\n"..
+				minetest.serialize(adventures.currentObjectives)
+	file:write(str)
+	file:close()
+end
 minetest.register_globalstep(function(dtime)
 	for _,player in pairs(minetest.get_connected_players()) do
 		local id = adventures.checkPoints[adventures.positionToString(adventures.snapPlayerPosition(player:getpos()))]
@@ -124,6 +132,7 @@ minetest.register_globalstep(function(dtime)
 	if(not adventures.autoSave) then return end
 	if(adventures.currentTime >= adventures.saveTime) then
 		savePlayerID()
+		adventures.saveQuestProgress()
 	end
 	adventures.currentTime = adventures.currentTime+dtime
 end)
