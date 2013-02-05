@@ -60,3 +60,10 @@ if(file ~= nil) then
 	end
 end
 file:close()
+
+file = io.open(minetest.get_worldpath().."/adventures_quests", "r")
+if(file ~= nil) then
+	adventures.quests = minetest.deserialize(file:read("*l"))
+	adventures.currentObjectives = minetest.deserialize(file:read("*l"))
+end
+file:close()
